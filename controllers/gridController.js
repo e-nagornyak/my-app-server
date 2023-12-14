@@ -5,11 +5,38 @@ const _ = require('lodash');
  * @desc - generates and returns a new grid
  * @method - GET
  */
+exports.myWords = (req, res) => {
+	try {
+		return res.send({bla: 's', body})
+		// const grid = new Grid(+req.query.width);
+		//
+		// return res.send({
+		// 	words: _.map(grid.words, (word) => ({
+		// 		isSelected: false,
+		// 		string: word,
+		// 		fromCell: null,
+		// 		toCell: null,
+		// 	})),
+		// 	grid: {
+		// 		width: grid.width,
+		// 		size: grid.size,
+		// 		gridIn2D: grid.getGridIn2D(),
+		// 	},
+		// });
+	} catch (err) {
+		res.status(400).send({ error: err.message });
+	}
+};
+
+/**
+ * @desc - generates and returns a new grid
+ * @method - GET
+ */
 exports.newGrid = (req, res) => {
 	try {
 		const grid = new Grid(+req.query.width);
 
-		return res.send({
+ 		return res.send({
 			words: _.map(grid.words, (word) => ({
 				isSelected: false,
 				string: word,

@@ -8,6 +8,15 @@ const validation = (req, res, next) => {
 	next();
 };
 
+exports.myWords = [
+	// check('width')
+	// 	.toInt()
+	// 	.isInt({ min: 6, max: 50 })
+	// 	.withMessage('Grid minimum width is 6 and maximum width is 50.')
+	// 	.bail(),
+	validation,
+];
+
 exports.newGrid = [
 	check('width')
 		.toInt()
