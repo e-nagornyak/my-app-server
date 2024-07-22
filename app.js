@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5050;
 const IP_TO_PING = process.env.IP_TO_PING;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-const NOTIFICATION_TIMEOUT_M = parseInt(process.env.NOTIFICATION_TIMEOUT_M, 10) || 5;
+const NOTIFICATION_TIMEOUT_M = parseInt(process.env.NOTIFICATION_TIMEOUT_M, 10) ;
 
 if (!IP_TO_PING || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
   console.error('Необхідні змінні середовища не встановлені');
