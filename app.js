@@ -9,19 +9,15 @@ const PORT = process.env.PORT || 5050;
 const IP_TO_PING = process.env.IP_TO_PING;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-const NOTIFICATION_TIMEOUT_M = parseInt(process.env.NOTIFICATION_TIMEOUT_M, 10) ;
+const NOTIFICATION_TIMEOUT_M = parseInt(process.env.NOTIFICATION_TIMEOUT_M, 10) || 5;
 
 if (!IP_TO_PING || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-  console.error('Необхідні змінні середовища не встановлені');
+  console.error('Required environment variables not set');
   process.exit(1);
 }
 
 const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
-
 const app = express();
-
-// IMPORT ROUTES
-const gridRoute = require('./routes/grid');
 
 // MIDDLEWARE
 app.use(express.urlencoded({ extended: true }));
@@ -29,26 +25,22 @@ app.use(express.json());
 app.use(cors());
 app.use(compression());
 
-// ROUTES
-app.use('/api/grid', gridRoute);
 
 // Ping service
 let lastStatus = null;
 
 function sendTelegramMessage(message) {
   bot.sendMessage(TELEGRAM_CHAT_ID, message)
-    .catch(error => console.error('Помилка відправки повідомлення в Telegram:', error));
+    .catch(error => console.error('Error sending message in Telegram:', error));
 }
 
 function pingService() {
   ping.sys.probe(IP_TO_PING, (isAlive) => {
     if (!isAlive && lastStatus !== false) {
-      const message = `Бляха, світла дома нема походу`;
-      sendTelegramMessage(message);
+      sendTelegramMessage('Блять, there is no light at home');
       lastStatus = false;
     } else if (isAlive && lastStatus !== true) {
-      const message = `Ура! Світло є!`;
-      sendTelegramMessage(message);
+      sendTelegramMessage('Ура! There is light!');
       lastStatus = true;
     }
   });
