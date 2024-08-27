@@ -16,7 +16,7 @@ if (!IP_TO_PING || !TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
   process.exit(1);
 }
 
-const bot = new TelegramBot(TELEGRAM_BOT_TOKEN);
+const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 const app = express();
 
 // MIDDLEWARE
@@ -45,12 +45,49 @@ function pingService() {
     }
   });
 }
+// Listen for any kind of message. There are different kinds of
+// messages.
+// bot.on('message', (msg) => {
+//   const chatId = msg.chat.id;
+//   bot.sendMessage(chatId, 'іів')
+//     .catch(error => console.error('Error sending message:', error));
+// });
+// bot.on('message', (msg) => {
+//   const chatId = msg.chat.id;
+//   console.log('messa')
+//   // Перевірка, чи це повідомлення з потрібної групи
+//   if (chatId.toString() === TELEGRAM_CHAT_ID) {
+//     // Дія для повідомлень із конкретної групи
+//     bot.sendMessage(chatId, 'Я почув повідомлення з вашої групи!')
+//       .catch(error => console.error('Error sending message:', error));
+//   }
+// });
+
+// Обробка команди "status"
+bot.onText(/status/, (msg) => {
+  const chatId = msg.chat.id;
+
+  ping.sys.probe(IP_TO_PING, (isAlive) => {
+    const responseMessage = isAlive ? 'Всьо пучком' : 'Не мєчтай';
+    bot.sendMessage(chatId, responseMessage)
+      .catch(error => console.error('Error sending message:', error));
+  });
+});
+
+bot.on('polling_error', (error) => {
+  console.error('Polling error:', error);
+});
+
+bot.on('webhook_error', (error) => {
+  console.error('Webhook error:', error);
+});
 
 // Run ping service every NOTIFICATION_TIMEOUT_M minutes
 const intervalMs = NOTIFICATION_TIMEOUT_M * 60 * 1000;
 setInterval(pingService, intervalMs);
 
 app.listen(PORT, () => {
+  // bot.startPolling()
   console.log(`Server listening on port ${PORT}!`);
   console.log(`Ping service started for IP: ${IP_TO_PING}`);
   console.log(`Ping interval set to ${NOTIFICATION_TIMEOUT_M} minutes`);
